@@ -1,69 +1,104 @@
-function WorkTimer(options){
-    this._elem = options.elem;
-    this._intervalIndication;
-    this._intervalTime;  
-    
-    var indication = this._elem.getElementsByClassName("indication")[0];
-    var t = this._elem.getElementsByClassName("time")[0];
-    
-    this._ind = {
-        secs: indication.getElementsByClassName("secs")[0],
-        mins: indication.getElementsByClassName("mins")[0],
-        hours: indication.getElementsByClassName("hours")[0]
+window.onload = function(){
+    var timer = function(){
+
+        var timer = document.getElementById('timer'),
+            indicat = timer.getElementsByClassName('indication')[0],
+            time = timer.getElementsByClassName('time')[0],
+            intervalIndicat,
+            intervalTime;
+
+        var indObj = createDateObj(indicat),
+            timeObj = createDateObj(time);
+
+
+        var countingTime = (function(){
+            var methodsList = {
+                hours: 'getHours',
+                mins: 'getMinutes',
+                secs: 'getSeconds',
+                millisecs: 'getMilliseconds'
+            };
+
+            return function(dateObj, date){
+                date = date || new Date();
+
+                for(var key in methodsList){
+                    if(dateObj[key] !== undefined){
+                        dateObj[key] = date[methodsList[key]]();
+                    }
+                }
+            }
+        })();
+
+        function createDateObj(elem, dateObj){
+            var that = dateObj || {
+                hours: 0,
+                mins: 0,
+                secs: 0
+            };
+
+            function toString(){
+                var str = '';
+
+                for(var key in that){
+                    if(typeof that[key] !== 'number') continue;
+
+                    str += (that[key] >= 10 ? that[key] : '0'+that[key]) + ':';
+                }
+
+                str = str.substring(0, str.length-1);
+
+                return str;
+            }
+
+            function getHtmlElems(htmlElem){
+                var elemsArr = [];
+
+                for(var key in that){
+                    if(typeof that[key] !== 'number') continue;
+                    //alert(key);
+                    elemsArr.push(htmlElem.getElementsByClassName(key)[0]);
+                }
+
+                return elemsArr;
+            }
+
+            that.toString = toString;
+            that.getHTMLElems = getHtmlElems(elem);
+
+            return that;
+        }
+
+        function print(dateObj){
+            var dateArr = dateObj.toString().split(':');
+            var elemsArr = dateObj.getHTMLElems;
+
+            for(var i = 0; i < dateArr.length; ++i){
+                elemsArr[i].innerHTML = dateArr[i];
+            }
+        }
+
+        function updateTime(dateObj, date){
+            countingTime(dateObj, date);
+            print(dateObj);
+        }
+
+        function start(){
+            updateTime(timeObj);
+            intervalTime = setInterval(function(){updateTime(timeObj);}, 1000);
+        }
+
+        function stop(){
+            clearInterval(intervalTime);
+        }
+
+        return {
+            start: start,
+            //reset: ,
+            stop: stop
+        };
     };
-    
-    this._time = {
-        secs: t.getElementsByClassName("secs")[0],
-        mins: t.getElementsByClassName("mins")[0],
-        hours: t.getElementsByClassName("hours")[0]
-    };
-}
 
-WorkTimer.prototype._formatting = function(timeElem, timeValues){
-    for(var key in timeElem){
-        timeElem[key].innerHTML = timeValues[key] < 10 ? "0"+timeValues[key] : timeValues[key];
-    }
+    var t = timer();
+    t.start();
 };
-
-WorkTimer.prototype._showInd = function(){
-    var secs = parseInt(this._ind.secs.innerHTML, 10);
-    var mins = parseInt(this._ind.mins.innerHTML, 10);
-    var hours = parseInt(this._ind.hours.innerHTML, 10);
-    
-    secs = secs < 60 ? secs+1 : 0;
-    
-};
-
-WorkTimer.prototype._showTime = function(){
-    var date = new Date();
-    
-    this._formatting(this._time, {
-        secs: date.getSeconds(),
-        mins: date.getMinutes(),
-        hours: date.getHours()
-    });
-};
-
-WorkTimer.prototype.start = function(){
-    var self = this;
-    //this.reset();
-    //this._intervalIndication = setInterval();
-    this._showTime();
-    this._intervalTime = setInterval(function(){self._showTime();}, 1000);
-};
-
-WorkTimer.prototype.reset = function(){
-    this._ind.secs.innerHTML = "00";
-    this._ind.mins.innerHTML = "00";
-    this._ind.hours.innerHTML = "00";
-};
-
-WorkTimer.prototype.stop = function(){
-    clearInterval(this._intervalIndication);
-    clearInterval(this._intervalTime);
-};
-
-var t = new WorkTimer({
-    elem: document.getElementById('timer')
-});
-t.start();
