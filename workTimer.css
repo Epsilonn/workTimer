@@ -1,3 +1,7 @@
-#timer .indication, #timer .time{
+#timer .indication, #timer .time, #timer .buttons{
     text-align: center;
+}
+
+#timer .buttons{
+    margin-top: 10px;
 }

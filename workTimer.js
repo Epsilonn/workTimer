@@ -1,9 +1,14 @@
 window.onload = function(){
     var timer = function(){
-
+        /**
+         * Initialization
+         */
         var timer = document.getElementById('timer'),
             indicat = timer.getElementsByClassName('indication')[0],
             time = timer.getElementsByClassName('time')[0],
+            buttons = timer.getElementsByClassName('buttons')[0],
+            startButton = buttons.getElementsByClassName('startTimer')[0],
+            stopButton = buttons.getElementsByClassName('stopTimer')[0],
             intervalIndicat,
             intervalTime;
 
@@ -11,6 +16,9 @@ window.onload = function(){
             timeObj = createDateObj(time);
 
 
+        /**
+         *  Private functions
+         */
         var countingTime = (function(){
             var methodsList = {
                 hours: 'getHours',
@@ -19,16 +27,49 @@ window.onload = function(){
                 millisecs: 'getMilliseconds'
             };
 
-            return function(dateObj, date){
-                date = date || new Date();
-
+            //for time object
+            function countingTime(dateObj, date){
                 for(var key in methodsList){
                     if(dateObj[key] !== undefined){
                         dateObj[key] = date[methodsList[key]]();
                     }
                 }
             }
+
+
+            return function(dateObj, date){
+                date = date || new Date();
+
+                countingTime(dateObj, date);
+            };
         })();
+
+        var indicationTime = (function(){
+
+            var propsArr = ['hours', 'mins', 'secs', 'millisecs'];
+
+            function incTime(dateObj, objPropName){
+                if(dateObj[objPropName] === undefined) return true;
+
+                if(objPropName === 'hours'){
+                    ++dateObj[objPropName];
+                    return false;
+                }
+
+                dateObj[objPropName] = (dateObj[objPropName]+1)%60;
+                return dateObj[objPropName] === 0;
+            }
+
+            return function(dateObj, date){
+                date = date || new Date();
+
+                for(var i = propsArr.length-1; i >= 0; --i){
+                    if(!incTime(dateObj, propsArr[i])){
+                        break;
+                    }
+                }
+            };
+        }());
 
         function createDateObj(elem, dateObj){
             var that = dateObj || {
@@ -83,15 +124,34 @@ window.onload = function(){
             print(dateObj);
         }
 
+        function getTimer(dateObj, date){
+            indicationTime(dateObj, date);
+            print(dateObj);
+        }
+
+        /**
+         *  Main object functions
+         */
         function start(){
             updateTime(timeObj);
             intervalTime = setInterval(function(){updateTime(timeObj);}, 1000);
+            intervalIndicat = setInterval(function(){getTimer(indObj);}, 1000);
         }
 
         function stop(){
-            clearInterval(intervalTime);
+            //clearInterval(intervalTime);
+            clearInterval(intervalIndicat);
         }
 
+        /**
+         * pre-launch
+         */
+        startButton.onclick = start;
+        stopButton.onclick = stop;
+
+        /**
+         * Main object
+         */
         return {
             start: start,
             //reset: ,
