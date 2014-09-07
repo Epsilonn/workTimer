@@ -1,10 +1,34 @@
 <!DOCTYPE html>
 <html>
 	<head>
+        <link rel="stylesheet" type="text/css" href="http://yastatic.net/bootstrap/3.1.1/css/bootstrap.min.css">
         <link rel="stylesheet" type="text/css" href="workTimer.css">
+
         <script src="workTimer.js"></script>
+        <script src="http://yastatic.net/jquery/2.1.1/jquery.min.js"></script>
+        <script src="http://yastatic.net/bootstrap/3.1.1/js/bootstrap.min.js"></script>
 	</head>
 	<body>
+        <div class="navbar navbar-inverse" role="navigation">
+            <div class="container">
+                <div class="navbar-header">
+                    <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                        <span class="sr-only">Toggle navigation</span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <a class="navbar-brand" href="#">Work timer</a>
+                </div>
+                <div class="collapse navbar-collapse">
+                    <ul class="nav navbar-nav navbar-right">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#about">Register</a></li>
+                        <li><a href="#contact">Sign in</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
 		<section id="timer">
 		    <div class="indication">
 		        <span class="hours">00</span>:<span class="mins">00</span>:<span class="secs">00</span>
